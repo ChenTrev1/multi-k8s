@@ -1,0 +1,16 @@
+docker build -t chennat234/multi-client:latest -t chennat234/multi-client:$SHA -f ./client/Dockerfile ./client
+docker build -t chennat234/multi-server:latest -t chennat234/multi-server:$SHA -f ./server/Dockerfile ./server
+docker build -t chennat234/multi-worker:latest -t chennat234/multi-worker:$SHA -f ./worker/Dockerfile ./worker
+
+docker push chennat234/multi-client:latest
+docker push chennat234/multi-server:latest
+docker push chennat234/multi-worker:latest
+
+docker push chennat234/multi-client:$SHA
+docker push chennat234/multi-server:$SHA
+docker push chennat234/multi-worker:$SHA
+
+kubectl apply -f k8s
+kubectl set image deployments/server-deployment server=chennat234/multi-server:$SHA
+kubectl set image deployments/client-deployment client=chennat234/multi-client:$SHA
+kubectl set image deployments/worker-deployment worker=chennat234/multi-worker:$SHA
